@@ -1,0 +1,2 @@
+#!/bin/bash
+exec docker run --rm -it -w /mnt -v $PWD:/mnt ruby:2.6 bash
