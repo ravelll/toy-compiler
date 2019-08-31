@@ -1,6 +1,6 @@
 #!/bin/bash
 
-cat > a.s
+ruby compiler.rb > a.s
 echo '-------- a.s ----------------'
 cat a.s
 echo '-------- result -------------'
