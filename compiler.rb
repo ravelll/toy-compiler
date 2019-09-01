@@ -4,6 +4,7 @@ class Compiler
       @source = source
       @source_index = 0
       @tokens = []
+      @token_index = 0
     end
 
     def read_number(char)
@@ -21,6 +22,16 @@ class Compiler
       end
 
       number_chars.join
+    end
+
+    def get_token
+      if @token_index == @tokens.size
+        return nil
+      end
+
+      token = @tokens[@token_index]
+      @token_index += 1
+      token
     end
 
     def tokenize
@@ -76,9 +87,9 @@ class Compiler
     end
 
     def parse
-      num = @tokens[0].value
+      token = get_token
 
-      Expr.new(kind: "literal_int", intval: num)
+      Expr.new(kind: "literal_int", intval: token.value)
     end
 
     def run
