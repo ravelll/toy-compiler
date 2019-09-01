@@ -49,7 +49,7 @@ class Compiler
           token = Token.new(kind: "literal_int", value: literal_int)
           @tokens = @tokens << token
           print " '#{token.value}'"
-        when ";", "+", "-", "*"
+        when ";", "+", "-", "*", "/"
           token = Token.new(kind: "punct", value: char)
           @tokens = @tokens << token
           print " '#{token.value}'"
@@ -99,6 +99,9 @@ class Compiler
           puts "  subq %rcx, %rax"
         when "*"
           puts "  imulq %rcx, %rax"
+        when "/"
+          puts "  movq $0, %rdx"
+          puts "  idiv %rcx"
         else
           raise StandardError, "generator_expr: Unknown binary expr.operator: #{expr.operator}"
         end
@@ -139,7 +142,7 @@ class Compiler
         end
 
         case token.value
-        when "+", "-", "*"
+        when "+", "-", "*", "/"
           left = expr
           right = parse_unary_expr
 
