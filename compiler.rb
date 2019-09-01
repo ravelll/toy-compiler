@@ -37,7 +37,7 @@ class Compiler
           tokens = tokens << token
           print token.value
         else
-          raise StandardError "Tokenizer: Invalid char: '#{char}'"
+          raise StandardError, "Tokenizer: Invalid char: '#{char}'"
         end
       end
 
@@ -82,7 +82,7 @@ end
 
 source = ARGV[0]
 if source.nil?
-  raise StandardError "Nothing was input"
+  raise StandardError, "Nothing was input"
 end
 
 Compiler::Runner.new(source).run
