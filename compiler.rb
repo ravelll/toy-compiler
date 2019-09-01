@@ -38,6 +38,10 @@ class Compiler
           token = Token.new(kind: "literal_int", value: literal_int)
           tokens = tokens << token
           print token.value
+        when ";"
+          token = Token.new(kind: "punct", value: char)
+          tokens = tokens << token
+          print " #{token.value}"
         else
           raise StandardError, "Tokenizer: Invalid char: '#{char}'"
         end
@@ -74,6 +78,10 @@ class Compiler
 
   class Token
     def initialize(kind:, value:)
+      if !["literal_int", "punct"].include? kind
+        raise StandardError, "Token#new: Invalid token kind"
+      end
+
       @kind = kind
       @value = value
     end
