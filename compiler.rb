@@ -65,16 +65,19 @@ class Compiler
       @source_index -= 1
     end
 
+    def generate(expr)
+      puts "  .global main"
+      puts "main:"
+      puts "  movq $#{expr.intval}, %rax"
+      puts "  ret"
+    end
+
     def run
       tokens = tokenize
       num = tokens[0].value
 
       expr = Expr.new(kind: "literal_int", intval: num)
-
-      puts "  .global main"
-      puts "main:"
-      puts "  movq $#{expr.intval}, %rax"
-      puts "  ret"
+      generate(expr)
     end
   end
 
