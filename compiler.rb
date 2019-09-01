@@ -3,6 +3,7 @@ class Compiler
     def initialize(source)
       @source = source
       @source_index = 0
+      @tokens = []
     end
 
     def read_number(char)
@@ -23,7 +24,6 @@ class Compiler
     end
 
     def tokenize
-      tokens = []
       print "# Tokens :"
 
       loop do
@@ -36,11 +36,11 @@ class Compiler
         when "0".."9"
           literal_int = read_number(char)
           token = Token.new(kind: "literal_int", value: literal_int)
-          tokens = tokens << token
+          @tokens = @tokens << token
           print token.value
         when ";"
           token = Token.new(kind: "punct", value: char)
-          tokens = tokens << token
+          @tokens = @tokens << token
           print " #{token.value}"
         else
           raise StandardError, "Tokenizer: Invalid char: '#{char}'"
@@ -48,7 +48,6 @@ class Compiler
       end
 
       print "\n"
-      tokens
     end
 
     def get_char
@@ -72,11 +71,16 @@ class Compiler
       puts "  ret"
     end
 
-    def run
-      tokens = tokenize
-      num = tokens[0].value
+    def parse
+      num = @tokens[0].value
 
-      expr = Expr.new(kind: "literal_int", intval: num)
+      Expr.new(kind: "literal_int", intval: num)
+    end
+
+    def run
+      tokenize
+
+      expr = parse
       generate(expr)
     end
   end
