@@ -86,10 +86,14 @@ class Compiler
       puts "  ret"
     end
 
-    def parse
+    def parse_unary_expr
       token = get_token
 
       Expr.new(kind: "literal_int", intval: token.value)
+    end
+
+    def parse
+      parse_unary_expr
     end
 
     def run
