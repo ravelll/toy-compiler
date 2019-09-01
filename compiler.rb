@@ -46,11 +46,11 @@ class Compiler
           next
         when "0".."9"
           literal_int = read_number(char)
-          token = Token.new(kind: "literal_int", value: literal_int)
+          token = Token.new(kind: :literal_int, value: literal_int)
           @tokens = @tokens << token
           print " '#{token.value}'"
         when ";", "+", "-", "*", "/"
-          token = Token.new(kind: "punct", value: char)
+          token = Token.new(kind: :punct, value: char)
           @tokens = @tokens << token
           print " '#{token.value}'"
         else
@@ -77,9 +77,9 @@ class Compiler
 
     def generate_expr(expr)
       case expr.kind
-      when "literal_int"
+      when :literal_int
         puts "  movq $#{expr.intval}, %rax"
-      when "unary"
+      when :unary
         case expr.operator
         when "+"
           puts "  movq $#{expr.operand.intval}, %rax"
@@ -88,7 +88,7 @@ class Compiler
         else
           raise StandardError, "generator_expr: Unknown unary expr.operator: #{expr.operator}"
         end
-      when "binary"
+      when :binary
         puts "  movq $#{expr.left.intval}, %rax"
         puts "  movq $#{expr.right.intval}, %rcx"
 
@@ -121,11 +121,11 @@ class Compiler
       token = get_token
 
       case token.kind
-      when "literal_int"
-        Expr.new(kind: "literal_int", intval: token.value)
-      when "punct"
+      when :literal_int
+        Expr.new(kind: :literal_int, intval: token.value)
+      when :punct
         operand = parse_unary_expr
-        Expr.new(kind: "unary", operator: token.value, operand: operand)
+        Expr.new(kind: :unary, operator: token.value, operand: operand)
       else
         nil
       end
@@ -147,7 +147,7 @@ class Compiler
           right = parse_unary_expr
 
           return Expr.new(
-            kind: "binary",
+            kind: :binary,
             operator: token.value,
             left: left,
             right: right
@@ -170,7 +170,7 @@ class Compiler
     attr_accessor :kind, :value
 
     def initialize(kind:, value:)
-      if !["literal_int", "punct"].include? kind
+      if ![:literal_int, :punct].include? kind
         raise StandardError, "Token#new: Invalid token kind: #{kind}"
       end
 
@@ -183,7 +183,7 @@ class Compiler
     attr_accessor :kind, :intval, :operator, :operand, :left, :right
 
     def initialize(kind:, intval: nil, operator: nil, operand: nil, left: nil, right: nil)
-      if !["literal_int", "unary", "binary"].include? kind
+      if ![:literal_int, :unary, :binary].include? kind
         raise StandardError, "Expr#new: Invalid token kind: #{kind}"
       end
 
