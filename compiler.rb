@@ -6,11 +6,25 @@ class Compiler
     end
 
     def read_number(char)
+      number_chars = [char]
+      loop do
+        char = get_char
+        break unless char
+
+        if '0' <= char && char <= '9'
+          number_chars << char
+        else
+          unget_char
+          break
+        end
+      end
+
+      number_chars.join
     end
 
     def tokenize
       tokens = []
-      p "# Tokens :"
+      print "# Tokens :"
 
       loop do
         char = get_char
@@ -21,12 +35,13 @@ class Compiler
           literal_int = read_number(char)
           token = Token.new(kind: "literal_int", value: literal_int)
           tokens = tokens << token
+          print token.value
         else
           raise StandardError "Tokenizer: Invalid char: '#{char}'"
         end
       end
 
-      p "\n"
+      print "\n"
       tokens
     end
 
@@ -45,7 +60,8 @@ class Compiler
     end
 
     def run
-      num = @source.to_i
+      tokens = tokenize
+      num = tokens[0].value
 
       puts "  .global main"
       puts "main:"
@@ -55,6 +71,11 @@ class Compiler
   end
 
   class Token
+    def initialize(kind:, value:)
+      @kind = kind
+      @value = value
+    end
+
     attr_accessor :kind, :value
   end
 end
