@@ -48,8 +48,8 @@ class Compiler
           literal_int = read_number(char)
           token = Token.new(kind: "literal_int", value: literal_int)
           @tokens = @tokens << token
-          print token.value
-        when ";"
+          print " #{token.value}"
+        when ";", "+", "-"
           token = Token.new(kind: "punct", value: char)
           @tokens = @tokens << token
           print " #{token.value}"
@@ -76,7 +76,21 @@ class Compiler
     end
 
     def generate_expr(expr)
-      puts "  movq $#{expr.intval}, %rax"
+      case expr.kind
+      when "literal_int"
+        puts "  movq $#{expr.intval}, %rax"
+      when "unary"
+        case expr.operator
+        when "+"
+          puts "  movq $#{expr.operand.intval}, %rax"
+        when "-"
+          puts "  movq $-#{expr.operand.intval}, %rax"
+        else
+          raise StandardError, "generator_expr: Unknown expr.operator: #{expr.operator}"
+        end
+      else
+        raise StandardError, "generator_expr: Unknown expr.kind: #{expr.kind}"
+      end
     end
 
     def generate_code(expr)
@@ -89,7 +103,15 @@ class Compiler
     def parse_unary_expr
       token = get_token
 
-      Expr.new(kind: "literal_int", intval: token.value)
+      case token.kind
+      when "literal_int"
+        Expr.new(kind: "literal_int", intval: token.value)
+      when "punct"
+        operand = parse_unary_expr
+        Expr.new(kind: "unary", operator: token.value, operand: operand)
+      else
+        nil
+      end
     end
 
     def parse
@@ -118,11 +140,13 @@ class Compiler
   end
 
   class Expr
-    attr_accessor :kind, :intval
+    attr_accessor :kind, :intval, :operator, :operand
 
-    def initialize(kind:, intval:)
+    def initialize(kind:, intval: nil, operator: nil, operand: nil)
       @kind = kind
       @intval = intval
+      @operator = operator # "+", "-"
+      @operand = operand # for unary expression
     end
   end
 end
