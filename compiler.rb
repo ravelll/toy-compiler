@@ -69,14 +69,18 @@ class Compiler
       tokens = tokenize
       num = tokens[0].value
 
+      expr = Expr.new(kind: "literal_int", intval: num)
+
       puts "  .global main"
       puts "main:"
-      puts "  movq $#{num}, %rax"
+      puts "  movq $#{expr.intval}, %rax"
       puts "  ret"
     end
   end
 
   class Token
+    attr_accessor :kind, :value
+
     def initialize(kind:, value:)
       if !["literal_int", "punct"].include? kind
         raise StandardError, "Token#new: Invalid token kind"
@@ -85,8 +89,15 @@ class Compiler
       @kind = kind
       @value = value
     end
+  end
 
-    attr_accessor :kind, :value
+  class Expr
+    attr_accessor :kind, :intval
+
+    def initialize(kind:, intval:)
+      @kind = kind
+      @intval = intval
+    end
   end
 end
 
