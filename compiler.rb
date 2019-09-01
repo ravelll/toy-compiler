@@ -64,10 +64,14 @@ class Compiler
       @source_index -= 1
     end
 
-    def generate(expr)
+    def generate_expr(expr)
+      puts "  movq $#{expr.intval}, %rax"
+    end
+
+    def generate_code(expr)
       puts "  .global main"
       puts "main:"
-      puts "  movq $#{expr.intval}, %rax"
+      generate_expr(expr)
       puts "  ret"
     end
 
@@ -81,7 +85,7 @@ class Compiler
       tokenize
 
       expr = parse
-      generate(expr)
+      generate_code(expr)
     end
   end
 
