@@ -31,6 +31,8 @@ class Compiler
         break unless char
 
         case char
+        when " ", "\t", "\n"
+          next
         when "0".."9"
           literal_int = read_number(char)
           token = Token.new(kind: "literal_int", value: literal_int)
